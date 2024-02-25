@@ -62,89 +62,89 @@ for i in $(cat ${input_list});do
     mkdir -p ${output_path}/${id}/tmp
 
     ### denoising ###
-    #mincnlm ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_nlm.mnc -mt 1 -beta 0.7 -clobber
-    #if [ ! -z ${t2} ];then mincnlm ${t2} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc -mt 1 -beta 0.7 -clobber; fi
+    mincnlm ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_nlm.mnc -mt 1 -beta 0.7 -clobber
+    if [ ! -z ${t2} ];then mincnlm ${t2} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc -mt 1 -beta 0.7 -clobber; fi
 
     ### co-registration of different modalities to t1 ###
-    #if [ ! -z ${t2} ];then bestlinreg_s2 -lsq6 ${t2} ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_to_t1.xfm -clobber -mi; fi
+    if [ ! -z ${t2} ];then bestlinreg_s2 -lsq6 ${t2} ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_to_t1.xfm -clobber -mi; fi
 
     ## generating temporary masks for non-uniformity correction ###
-    #bestlinreg_s2 ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc ${model_path}/Av_T2.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm  -clobber
-    #mincresample  ${model_path}/Mask.mnc -like ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc -transform \
-    #    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm -inv -nearest -clobber
-    #mincresample  ${model_path}/Mask.mnc -like ${t2} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc -transform \
-    #    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm  -inv -nearest -clobber
+    bestlinreg_s2 ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc ${model_path}/Av_T2.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm  -clobber
+    mincresample  ${model_path}/Mask.mnc -like ${t1} ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc -transform \
+        ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm -inv -nearest -clobber
+    mincresample  ${model_path}/Mask.mnc -like ${t2} ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc -transform \
+        ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx_tmp0.xfm  -inv -nearest -clobber
       
     ### non-uniformity correction ###
-    #nu_correct ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_nlm.mnc ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_n3.mnc \
-    # -mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc -iter 200 -distance 200 -stop 0.000001 -normalize_field  -clobber
-    #nu_correct ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_n3.mnc \
-    #-mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc -iter 200 -distance 200 -stop 0.000001 -normalize_field  -clobber
+    nu_correct ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_nlm.mnc ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_n3.mnc \
+     -mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc -iter 200 -distance 200 -stop 0.000001 -normalize_field  -clobber
+    nu_correct ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_nlm.mnc ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_n3.mnc \
+    -mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc -iter 200 -distance 200 -stop 0.000001 -normalize_field  -clobber
 
     ### intensity normalization ###
-    #volume_pol ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_n3.mnc ${model_path}/Av_T1.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc \
-    #--source_mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc --target_mask ${model_path}/Mask.mnc  --clobber
-    #volume_pol ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_n3.mnc ${model_path}/Av_T2.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc \
-    # --source_mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc --target_mask ${model_path}/Mask.mnc  --clobber
+    volume_pol ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_n3.mnc ${model_path}/Av_T1.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc \
+    --source_mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_mask_tmp.mnc --target_mask ${model_path}/Mask.mnc  --clobber
+    volume_pol ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_n3.mnc ${model_path}/Av_T2.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc \
+     --source_mask ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_mask_tmp.mnc --target_mask ${model_path}/Mask.mnc  --clobber
 
 done
 
 ### registering everything to stx space ###
-#bestlinreg_s2 ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc ${model_path}/Av_T2.mnc  \
-#    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm  -clobber
+bestlinreg_s2 ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc ${model_path}/Av_T2.mnc  \
+    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm  -clobber
 
-#itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc \
-#    --like ${model_path}/Av_T1.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
-#itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc \
-#    --like ${model_path}/Av_T2.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
+itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc \
+    --like ${model_path}/Av_T1.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
+itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t2_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc \
+    --like ${model_path}/Av_T2.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
 
-#itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_lowres.mnc \
-#    --like ${model_path}/lowres.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
+itk_resample ${output_path}/${id}/${visit}/native/${id}_${visit}_t1_vp.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_lowres.mnc \
+    --like ${model_path}/lowres.mnc --transform ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_to_icbm_stx2.xfm --order 4 --clobber
 
-#mincbeast ${model_path}/ADNI_library ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_lowres.mnc \
-#    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask_lowres.mnc -fill -median -same_resolution \
-#    -configuration ${model_path}/ADNI_library/default.2mm.conf -clobber
+mincbeast ${model_path}/ADNI_library ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_lowres.mnc \
+    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask_lowres.mnc -fill -median -same_resolution \
+    -configuration ${model_path}/ADNI_library/default.2mm.conf -clobber
      
-#mincresample ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask_lowres.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc -nearest -like \
-#    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc -clobber
+mincresample ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask_lowres.mnc ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc -nearest -like \
+    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc -clobber
 
 
-#volume_pol ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc ${model_path}/Av_T1.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp \
-#    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_vp.mnc  --source_mask ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc \
-#    --target_mask ${model_path}/Mask.mnc --clobber
-#volume_pol ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc ${model_path}/Av_T2.mnc --order 1 --noclamp -expfile ${output_path}/${id}/tmp/tmp \
-#${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_vp.mnc  --source_mask ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc \
-#    --target_mask ${model_path}/Mask.mnc --clobber
+volume_pol ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin.mnc ${model_path}/Av_T1.mnc --order 1 --noclamp --expfile ${output_path}/${id}/tmp/tmp \
+    ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_vp.mnc  --source_mask ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc \
+    --target_mask ${model_path}/Mask.mnc --clobber
+volume_pol ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc ${model_path}/Av_T2.mnc --order 1 --noclamp -expfile ${output_path}/${id}/tmp/tmp \
+${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_vp.mnc  --source_mask ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc \
+    --target_mask ${model_path}/Mask.mnc --clobber
 
-#trg_mask=${model_path}/Mask.mnc    
-#src=${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_vp.mnc
-#trg=${model_path}/Av_T2.mnc
-#src_mask=${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc
+trg_mask=${model_path}/Mask.mnc    
+src=${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_vp.mnc
+trg=${model_path}/Av_T2.mnc
+src_mask=${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc
     
-#outp=${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_
-#if [ ! -z $trg_mask ];then
-#    mask="-x [${src_mask},${trg_mask}] "
-#fi
-#antsRegistration -v -d 3 --float 1  --output "[${outp}]"  --use-histogram-matching 0 --winsorize-image-intensities "[0.005,0.995]" \
-#   --transform "SyN[0.7,3,0]" --metric "CC[${src},${trg},1,4]" --convergence "[50x50x30,1e-6,10]" --shrink-factors 4x2x1 --smoothing-sigmas 2x1x0vox ${mask} --minc
+outp=${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_
+if [ ! -z $trg_mask ];then
+    mask="-x [${src_mask},${trg_mask}] "
+fi
+antsRegistration -v -d 3 --float 1  --output "[${outp}]"  --use-histogram-matching 0 --winsorize-image-intensities "[0.005,0.995]" \
+   --transform "SyN[0.7,3,0]" --metric "CC[${src},${trg},1,4]" --convergence "[50x50x30,1e-6,10]" --shrink-factors 4x2x1 --smoothing-sigmas 2x1x0vox ${mask} --minc
 
-#itk_resample ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_vp.mnc ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_nlin.mnc \
-#    --like ${model_path}/Av_T1.mnc --transform ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm --order 4 --clobber --invert_transform
-#grid_proc --det ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL_grid_0.mnc ${output_path}/${id}/${visit}/vbm/${id}_${visit}_dbm.mnc
+itk_resample ${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_lin_vp.mnc ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_nlin.mnc \
+    --like ${model_path}/Av_T1.mnc --transform ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm --order 4 --clobber --invert_transform
+grid_proc --det ${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL_grid_0.mnc ${output_path}/${id}/${visit}/vbm/${id}_${visit}_dbm.mnc
     
-#echo Subjects,T1s,Masks,XFMs >> ${output_path}/${id}/to_segment_t2.csv
-#echo ${id}_${visit}_t1,${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc,\
-#${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc,\
-#${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm >> ${output_path}/${id}/to_segment_t2.csv 
+echo Subjects,T1s,Masks,XFMs >> ${output_path}/${id}/to_segment_t2.csv
+echo ${id}_${visit}_t1,${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin.mnc,\
+${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc,\
+${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm >> ${output_path}/${id}/to_segment_t2.csv 
 
-#echo Subjects,T1s,Masks,XFMs >> ${output_path}/${id}/to_segment_t1.csv
-#echo ${id}_${visit}_t1,${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_inv.mnc,\
-#${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc,\
-#${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm >> ${output_path}/${id}/to_segment_t1.csv 
+echo Subjects,T1s,Masks,XFMs >> ${output_path}/${id}/to_segment_t1.csv
+echo ${id}_${visit}_t1,${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t2_stx2_lin_inv.mnc,\
+${output_path}/${id}/${visit}/stx_lin/${id}_${visit}_t1_stx2_beast_mask.mnc,\
+${output_path}/${id}/${visit}/stx_nlin/${id}_${visit}_inv_nlin_0_inverse_NL.xfm >> ${output_path}/${id}/to_segment_t1.csv 
 
 ### Running BISON for tissue classification ###
-#python ${model_path}/BISON.py -c RF0 -m ${model_path}/Pretrained_Library_Just_T2_L9/ \
-# -o  ${output_path}/${id}/cls/ -t ${output_path}/${id}/tmp/ -e PT -n  ${output_path}/${id}/to_segment_t2.csv  -p  ${model_path}/Pretrained_Library_Just_T2_L9/ -l 9
+python ${model_path}/BISON.py -c RF0 -m ${model_path}/Pretrained_Library_Just_T2_L9/ \
+ -o  ${output_path}/${id}/cls/ -t ${output_path}/${id}/tmp/ -e PT -n  ${output_path}/${id}/to_segment_t2.csv  -p  ${model_path}/Pretrained_Library_Just_T2_L9/ -l 9
 
 python ${model_path}/BISON.py -c RF0 -m ${model_path}/Pretrained_Library_ADNI_L9/ \
  -o  ${output_path}/${id}/cls/ -t ${output_path}/${id}/tmp/ -e PT -n  ${output_path}/${id}/to_segment_t1.csv  -p  ${model_path}/Pretrained_Library_ADNI_L9/ -l 9
